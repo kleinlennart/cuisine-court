@@ -104,8 +104,13 @@
         color: inherit;
         cursor: pointer;
       }
+      button,
+      .chip {
+        -webkit-tap-highlight-color: transparent;
+      }
+      /* keyboard focus only; taps (incl. the refocus after re-render) stay clean */
       button:focus-visible,
-      .chip:focus-within {
+      .chip:has(input:focus-visible) {
         outline: 3px solid var(--brass);
         outline-offset: 3px;
       }
