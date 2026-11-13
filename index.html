@@ -1285,6 +1285,7 @@
             total = (n * (n - 1)) / 2;
           app.innerHTML =
             head +
+            installHTML() +
             `
     <section class="hero"><h1>Settle dinner <em>once and for all.</em></h1>
       <p>Pick between two cuisines at a time. The court builds a ranking from your rulings and objects the moment your taste contradicts itself.</p></section>
@@ -1303,8 +1304,7 @@
         <button class="mode" role="radio" aria-checked="${!!S.debate}" data-a="mode-debate"><b>Debate mode</b><small>Adds a scenario prompt and a 30-second timer to every matchup.</small></button>
       </div></section>
     <div class="row"><span class="hint">${n < 4 ? "Pick at least 4 to start." : "You can call the verdict early at any point."}</span>
-      <button class="cta" data-a="start" ${n < 4 ? "disabled" : ""}>Call the first case</button></div>
-    ${installHTML()}`;
+      <button class="cta" data-a="start" ${n < 4 ? "disabled" : ""}>Call the first case</button></div>`;
           app.querySelectorAll("[data-c]").forEach(
             (el) =>
               (el.onchange = () => {
@@ -1398,8 +1398,8 @@
       <button class="cta" data-a="copy">Copy for the group chat</button>
       <span class="copied" id="copied" role="status"></span>
     </div>
-    <div class="tools">${S.cur || nextPair() ? `<button class="ghost" data-a="resume">Keep ruling</button>` : ""}<button class="ghost" data-a="again">Rematch, same line-up</button></div>
-    ${installHTML()}`;
+    ${installHTML()}
+    <div class="tools">${S.cur || nextPair() ? `<button class="ghost" data-a="resume">Keep ruling</button>` : ""}<button class="ghost" data-a="again">Rematch, same line-up</button></div>`;
           save();
         }
         renderLayer();
