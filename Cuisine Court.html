@@ -1,0 +1,476 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Cuisine Court</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one narrow courtroom column; the matchup is two order tickets stacked around a VS seal, standings below. Single committed dark "mahogany bench" look. */
+:root{
+  --wood:#2A1613; --bench:#3A201B; --grain:#331B17; --line:#5C3B31;
+  --paper:#FBEFD9; --ink:#2A1613; --muted:#C7AF96;
+  --brass:#E8B04B; --chili:#FF5A3C; --leaf:#86CFA0;
+  --f-display:"Dela Gothic One","Arial Black",Impact,sans-serif;
+  --f-body:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+html,body{min-height:100%}
+body{
+  background:var(--wood);
+  background-image:repeating-linear-gradient(97deg,transparent 0 22px,var(--grain) 22px 23px,transparent 23px 61px);
+  color:var(--paper);font-family:var(--f-body);font-size:16px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:20px 48px;
+}
+.wrap{max-width:540px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,.chip:focus-within{outline:3px solid var(--brass);outline-offset:3px}
+.mono{font-family:var(--f-mono)}
+.label{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+
+/* header */
+header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.mark{font-family:var(--f-display);font-size:22px;letter-spacing:.01em;line-height:1;color:var(--brass)}
+.mark small{display:block;font-family:var(--f-mono);font-size:10px;letter-spacing:.2em;color:var(--muted);margin-top:6px}
+.ghost{background:none;border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:13px;color:var(--muted)}
+.ghost:hover{border-color:var(--brass);color:var(--paper)}
+
+/* setup */
+.hero h1{font-family:var(--f-display);font-weight:400;font-size:clamp(34px,9vw,52px);line-height:1;margin:0;text-wrap:balance}
+.hero h1 em{font-style:normal;color:var(--chili)}
+.hero p{color:var(--muted);margin:14px 0 0;max-width:46ch}
+.rules{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.rules li{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:baseline}
+.rules b{font-family:var(--f-mono);color:var(--brass);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{position:relative}
+.chip input{position:absolute;opacity:0;inset:0;cursor:pointer;margin:0}
+.chip span{display:block;padding:8px 14px;border-radius:999px;border:1px solid var(--line);font-weight:600;font-size:14px;color:var(--muted);transition:.15s}
+.chip input:checked+span{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.cta{background:var(--brass);color:var(--ink);border:0;border-radius:14px;padding:16px 22px;font-family:var(--f-display);font-size:18px;letter-spacing:.02em;box-shadow:0 4px 0 #9A6E22;transition:transform .1s,box-shadow .1s}
+.cta:active{transform:translateY(3px);box-shadow:0 1px 0 #9A6E22}
+.cta:disabled{opacity:.45;cursor:not-allowed}
+.hint{font-size:13px;color:var(--muted)}
+
+/* docket */
+.docket{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.progress{height:6px;background:var(--bench);border-radius:99px;overflow:hidden}
+.progress i{display:block;height:100%;background:var(--brass);border-radius:99px;transition:width .3s}
+.xexam{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink);background:var(--chili);padding:4px 9px;border-radius:4px}
+
+.prompt{font-size:clamp(20px,5.4vw,26px);font-weight:800;line-height:1.15;text-wrap:balance;margin:0}
+.prompt-sub{color:var(--muted);font-size:14px;margin-top:6px}
+
+/* matchup */
+.bout{display:grid;gap:0;position:relative}
+.ticket{
+  position:relative;text-align:left;width:100%;border:0;
+  background:var(--paper);color:var(--ink);border-radius:14px;padding:20px 22px 18px;
+  display:grid;gap:6px;transition:transform .15s,box-shadow .15s;
+  box-shadow:0 0 0 0 var(--brass);
+}
+.ticket::before{content:"";position:absolute;left:22px;right:22px;top:9px;border-top:2px dashed #E3CFAE}
+.ticket:hover{transform:translateY(-2px);box-shadow:0 0 0 4px var(--brass)}
+.ticket .nm{font-family:var(--f-display);font-size:clamp(30px,9vw,44px);line-height:1;overflow-wrap:anywhere}
+.ticket .ds{font-family:var(--f-mono);font-size:12px;color:#7A5A48}
+.ticket .rec{position:absolute;right:16px;top:18px;font-family:var(--f-mono);font-size:11px;color:#9C7D66}
+.vs{justify-self:center;margin:-14px 0;z-index:2;width:58px;height:58px;border-radius:50%;background:var(--chili);color:var(--paper);display:grid;place-items:center;font-family:var(--f-display);font-size:18px;border:4px solid var(--wood);transform:rotate(-8deg)}
+
+.tools{display:flex;gap:10px;flex-wrap:wrap}
+.timer{display:flex;align-items:center;gap:8px}
+.timer svg{width:22px;height:22px;transform:rotate(-90deg)}
+.timer .t-txt{font-family:var(--f-mono);font-variant-numeric:tabular-nums;min-width:3ch}
+.timer.done{border-color:var(--chili);color:var(--chili)}
+
+/* toast */
+.toast{border-radius:12px;padding:12px 14px;font-size:14px;border:1px solid var(--line);background:var(--bench);display:flex;gap:10px;align-items:baseline}
+.toast b{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;flex:none}
+.toast.ok b{color:var(--leaf)} .toast.bad b{color:var(--chili)}
+
+/* objection overlay */
+.scrim{position:fixed;inset:0;background:rgba(20,8,6,.78);display:grid;place-items:center;z-index:20;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.objection{max-width:460px;width:100%;background:var(--bench);border:2px solid var(--chili);border-radius:18px;padding:24px 22px;display:grid;gap:16px;animation:slam .45s cubic-bezier(.2,1.6,.4,1)}
+.stamp{font-family:var(--f-display);font-size:clamp(40px,12vw,58px);color:var(--chili);line-height:1;transform:rotate(-4deg);transform-origin:left}
+.loop{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-weight:800;font-size:17px}
+.loop span{background:var(--paper);color:var(--ink);padding:3px 10px;border-radius:6px}
+.loop i{font-style:normal;color:var(--chili);font-family:var(--f-mono)}
+.roast{color:var(--muted);margin:0}
+.choices{display:grid;gap:10px}
+.choices button{border-radius:12px;padding:14px;font-weight:800;border:1px solid var(--line);background:var(--wood);text-align:left}
+.choices button small{display:block;font-weight:400;color:var(--muted);font-size:13px;margin-top:2px}
+.choices button:hover{border-color:var(--brass)}
+@keyframes slam{from{transform:scale(1.25) rotate(2deg);opacity:0}to{transform:none;opacity:1}}
+
+/* standings */
+.panel{background:var(--bench);border:1px solid var(--line);border-radius:16px;padding:16px 16px 12px;display:grid;gap:10px}
+.panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.cred{font-family:var(--f-mono);font-size:13px;font-variant-numeric:tabular-nums}
+.stand{list-style:none;margin:0;padding:0;display:grid;gap:7px;counter-reset:r}
+.stand li{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:10px;align-items:center;counter-increment:r}
+.stand li::before{content:counter(r);font-family:var(--f-mono);font-size:12px;color:var(--muted);text-align:right}
+.stand .bar{position:relative;height:26px;border-radius:6px;overflow:hidden;background:var(--wood)}
+.stand .bar i{position:absolute;inset:0 auto 0 0;background:#5A3A2C;border-radius:6px;transition:width .4s}
+.stand li:first-child .bar i{background:#8A6326}
+.stand .bar span{position:relative;padding:0 9px;line-height:26px;font-weight:600;font-size:14px;white-space:nowrap}
+.stand .wl{font-family:var(--f-mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* verdict */
+.verdict h2{font-family:var(--f-display);font-weight:400;font-size:clamp(36px,10vw,54px);margin:0;line-height:1}
+.podium{display:grid;gap:10px}
+.champ{background:var(--paper);color:var(--ink);border-radius:16px;padding:22px;display:grid;gap:4px}
+.champ .nm{font-family:var(--f-display);font-size:clamp(38px,11vw,56px);line-height:1}
+.champ .ds{font-family:var(--f-mono);font-size:12px;color:#7A5A48}
+.score{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.dial{width:96px;height:96px}
+.dial text{font-family:var(--f-display);font-size:24px;fill:var(--paper)}
+.title{font-family:var(--f-display);font-size:22px;line-height:1.1;color:var(--brass)}
+.facts{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.facts li{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;padding:10px 0;border-top:1px solid var(--line)}
+.loops{display:grid;gap:8px}
+.loops .loop{font-size:14px}
+.loops .loop span{padding:2px 8px}
+.copied{color:var(--leaf);font-size:13px}
+
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.mode{text-align:left;border:1px solid var(--line);background:var(--bench);border-radius:14px;padding:14px 16px;display:grid;gap:4px;transition:.15s}
+.mode b{font-weight:800;font-size:16px}
+.mode small{color:var(--muted);font-size:13px;line-height:1.35}
+.mode:hover{border-color:var(--brass)}
+.mode[aria-checked="true"]{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.mode[aria-checked="true"] small{color:#7A5A48}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap" id="app"></div>
+<div id="layer"></div>
+
+<script>
+const CUISINES=[
+ ["thai","Thai","pad kra pao · khao soi · som tam"],
+ ["chinese","Chinese","xiao long bao · mapo tofu · char siu"],
+ ["japanese","Japanese","ramen · omakase · katsu sando"],
+ ["korean","Korean","fried chicken · bibimbap · KBBQ"],
+ ["vietnamese","Vietnamese","phở · bánh mì · bún chả"],
+ ["indian","Indian","biryani · dal makhani · dosa"],
+ ["mexican","Mexican","al pastor · mole · birria"],
+ ["italian","Italian","cacio e pepe · pizza · osso buco"],
+ ["lebanese","Lebanese","mezze · shawarma · man'oushe"],
+ ["french","French","steak frites · duck confit · croissant"],
+ ["ethiopian","Ethiopian","injera · doro wat · kitfo"],
+ ["greek","Greek","souvlaki · moussaka · spanakopita"],
+ ["turkish","Turkish","lahmacun · İskender · pide"],
+ ["peruvian","Peruvian","ceviche · lomo saltado · pollo a la brasa"],
+ ["spanish","Spanish","tapas · paella · jamón"],
+ ["malaysian","Malaysian","laksa · nasi lemak · roti canai"],
+ ["american","American","smash burger · brisket · mac & cheese"],
+ ["georgian","Georgian","khachapuri · khinkali · pkhali"],
+ ["german","German","schnitzel · currywurst · spätzle"],
+ ["nepali","Nepali","momo · dal bhat · thukpa"],
+ ["israeli","Israeli","sabich · shakshuka · hummus"]
+].map(([id,name,dishes])=>({id,name,dishes}));
+const C=Object.fromEntries(CUISINES.map(c=>[c.id,c]));
+const DEFAULT=["thai","chinese","japanese","korean","vietnamese","indian","mexican","italian","lebanese","french"];
+
+const PROMPTS=[
+ ["Only one for the next 7 days.","No swaps, no snacks on the side."],
+ ["It's 2am. Make your case.","Whoever argues worse buys the delivery fee."],
+ ["Someone else is paying.","Does that change your answer? It shouldn't."],
+ ["Your birthday dinner. Pick the kitchen.","Defend it in one sentence."],
+ ["Leftovers, next day, straight from the fridge.","Which one holds up?"],
+ ["Rainy Sunday on the couch.","Thirty seconds each. Go."],
+ ["Feeding a picky eight-year-old.","Diplomacy counts."],
+ ["Best $20 order in the city.","Name the actual dish."],
+ ["Hungover. Explain yourself.","The court has seen things."],
+ ["Last meal on Earth.","Dramatic answers encouraged."],
+ ["Which one do you crave more often?","Honesty is admissible."],
+ ["Group of eight, nobody agrees.","Which one keeps the peace?"],
+ ["You can only learn to cook one.","Which kitchen is worth the effort?"],
+ ["First date. What does your pick say about you?","The jury is judging both of you."]
+];
+const ROASTS=[
+ "That's not a ranking. That's a roundabout.",
+ "Rock, paper, dumplings.",
+ "Somewhere an economist just fainted.",
+ "Your taste buds have filed a complaint against each other.",
+ "The spreadsheet is crying.",
+ "Pick a lane. Any lane.",
+ "The court would like to see your receipts."
+];
+
+const key=(a,b)=>a<b?a+"|"+b:b+"|"+a;
+const store={get(){try{return JSON.parse(localStorage.getItem("cc-game"))}catch(e){return null}},set(v){try{localStorage.setItem("cc-game",JSON.stringify(v))}catch(e){}}};
+
+function fresh(sel,debate){return{debate:!!debate,screen:"setup",sel:sel||DEFAULT.slice(),res:{},order:[],cur:null,trap:false,prompt:0,pending:null,toast:null,stood:0,overruled:0}}
+let S=store.get()||fresh();
+if(!S.sel)S=fresh();
+
+/* ---------- logic ---------- */
+function graph(){
+  const g={};S.sel.forEach(id=>g[id]=new Set());
+  for(const k in S.res){const[a,b]=k.split("|");const w=S.res[k],l=w===a?b:a;if(g[w])g[w].add(l)}
+  return g;
+}
+function findPath(g,from,to){ // shortest beat-chain from -> ... -> to
+  const prev={[from]:null},q=[from];
+  while(q.length){const x=q.shift();if(x===to){const p=[];let y=to;while(y!==null){p.unshift(y);y=prev[y]}return p}
+    for(const n of g[x]||[])if(!(n in prev)){prev[n]=x;q.push(n)}}
+  return null;
+}
+function allPairs(){const p=[];for(let i=0;i<S.sel.length;i++)for(let j=i+1;j<S.sel.length;j++)p.push([S.sel[i],S.sel[j]]);return p}
+function games(){const c={};S.sel.forEach(id=>c[id]=0);for(const k in S.res){const[a,b]=k.split("|");c[a]++;c[b]++}return c}
+function record(){const r={};S.sel.forEach(id=>r[id]={w:0,l:0});for(const k in S.res){const[a,b]=k.split("|");const w=S.res[k],l=w===a?b:a;r[w].w++;r[l].l++}return r}
+
+function nextPair(){
+  const open=allPairs().filter(([a,b])=>!(key(a,b) in S.res));
+  if(!open.length)return null;
+  const g=graph();
+  const traps=open.filter(([a,b])=>findPath(g,a,b)||findPath(g,b,a));
+  const last=S.cur||[];
+  const fresh=list=>{const f=list.filter(([a,b])=>!last.includes(a)&&!last.includes(b));return f.length?f:list};
+  let pick,trap=false;
+  if(traps.length&&Math.random()<.38){const t=fresh(traps);pick=t[Math.random()*t.length|0];trap=true}
+  else{
+    const c=games(),cand=fresh(open);
+    const min=Math.min(...cand.map(([a,b])=>c[a]+c[b]));
+    const best=cand.filter(([a,b])=>c[a]+c[b]===min);
+    pick=best[Math.random()*best.length|0];
+    trap=!!(findPath(g,pick[0],pick[1])||findPath(g,pick[1],pick[0]));
+  }
+  if(Math.random()<.5)pick=[pick[1],pick[0]];
+  return{pick,trap};
+}
+function advance(){
+  const n=nextPair();
+  if(!n){S.cur=null;S.screen="verdict"}
+  else{S.cur=n.pick;S.trap=n.trap;S.prompt=Math.random()*PROMPTS.length|0}
+  stopTimer();save();render();
+}
+function commit(w,l){S.res[key(w,l)]=w;S.order.push(key(w,l))}
+function vote(w){
+  const[a,b]=S.cur;const l=w===a?b:a;
+  const chain=findPath(graph(),w,l)?null:findPath(graph(),l,w);
+  if(chain){S.pending={w,l,chain,roast:ROASTS[Math.random()*ROASTS.length|0]};save();render();return}
+  commit(w,l);
+  S.toast=S.trap?{ok:true,tag:"Cross-exam passed",msg:`${C[w].name} over ${C[l].name} fits your earlier rulings. The court is impressed.`}:null;
+  advance();
+}
+function stand(){const p=S.pending;commit(p.w,p.l);S.stood++;S.pending=null;
+  S.toast={ok:false,tag:"Loop on record",msg:`${C[p.w].name} over ${C[p.l].name} stays. Your credibility takes the hit.`};advance()}
+function overrule(){const p=S.pending;commit(p.l,p.w);S.overruled++;S.pending=null;
+  S.toast={ok:true,tag:"Overruled",msg:`Corrected to ${C[p.l].name} over ${C[p.w].name}. Order restored.`};advance()}
+function undo(){
+  const k=S.order.pop();if(!k)return;delete S.res[k];
+  S.cur=k.split("|");S.trap=!!(findPath(graph(),S.cur[0],S.cur[1])||findPath(graph(),S.cur[1],S.cur[0]));
+  S.toast={ok:true,tag:"Struck",msg:"Last ruling removed from the record."};S.screen="play";save();render();
+}
+
+/* Bradley–Terry strengths with a light prior, so partial data still ranks sensibly */
+function strengths(){
+  const ids=S.sel,p={},W={},N={};
+  ids.forEach(i=>{p[i]=1;W[i]=1;N[i]={}});
+  for(const k in S.res){const[a,b]=k.split("|");const w=S.res[k];W[w]++;N[a][b]=1;N[b][a]=1}
+  for(let it=0;it<80;it++){
+    const np={};
+    ids.forEach(i=>{let d=1/(p[i]+1)*2;for(const j in N[i])d+=1/(p[i]+p[j]);np[i]=(W[i])/d});
+    const m=Math.exp(ids.reduce((s,i)=>s+Math.log(np[i]),0)/ids.length);
+    ids.forEach(i=>p[i]=np[i]/m);
+  }
+  return p;
+}
+function ranking(){const p=strengths(),r=record();
+  return S.sel.slice().sort((a,b)=>p[b]-p[a]||r[b].w-r[a].w).map(id=>({id,s:p[id],...r[id]}))}
+
+/* circular triads among fully decided triples */
+function triads(){
+  const ids=S.sel,beats=(a,b)=>S.res[key(a,b)]===a;let decided=0;const cyc=[];
+  for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++)for(let k=j+1;k<ids.length;k++){
+    const a=ids[i],b=ids[j],c=ids[k];
+    if(!(key(a,b) in S.res&&key(b,c) in S.res&&key(a,c) in S.res))continue;
+    decided++;
+    if(beats(a,b)&&beats(b,c)&&beats(c,a))cyc.push([a,b,c]);
+    else if(beats(b,a)&&beats(c,b)&&beats(a,c))cyc.push([a,c,b]);
+  }
+  return{decided,cyc,cred:decided?Math.round(100*(1-cyc.length/decided)):null};
+}
+function title(c){
+  if(c===null)return["Not yet sworn in","Rule on a few more cases."];
+  if(c===100)return["Supreme Court material","Not a single loop. Suspiciously principled."];
+  if(c>=90)return["Respected judge","A wobble or two, nothing the appeals court can't live with."];
+  if(c>=75)return["Mostly credible","Your rankings hold up, unless someone says the word noodles."];
+  if(c>=55)return["Swayed by the jury","Whoever argued last usually won."];
+  return["Held in contempt","Your palate is a democracy and every faction won."];
+}
+
+/* ---------- timer ---------- */
+let T={left:0,id:null};
+function startTimer(){stopTimer();T.left=30;tickUI();T.id=setInterval(()=>{T.left--;tickUI();if(T.left<=0){clearInterval(T.id);T.id=null}},1000)}
+function stopTimer(){if(T.id)clearInterval(T.id);T.id=null;T.left=0}
+function tickUI(){const el=document.getElementById("timer");if(!el)return;
+  const txt=el.querySelector(".t-txt"),arc=el.querySelector(".arc");
+  el.classList.toggle("done",T.left===0&&!T.id&&txt.dataset.ran==="1");
+  if(T.id||T.left>0){txt.textContent=T.left+"s";txt.dataset.ran="1";arc.style.strokeDashoffset=String(56.5*(1-T.left/30))}
+  else{txt.textContent=txt.dataset.ran==="1"?"Time":"30s";arc.style.strokeDashoffset=txt.dataset.ran==="1"?"56.5":"0"}
+}
+
+/* ---------- render ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function save(){store.set(S)}
+
+function standingsHTML(){
+  const r=ranking(),t=triads(),max=Math.max(...r.map(x=>x.s));
+  return `<section class="panel" aria-label="Current standings">
+    <div class="panel-head"><span class="label">Standings</span>
+      <span class="cred">Credibility ${t.cred===null?"—":t.cred+"%"} · ${t.cyc.length} loop${t.cyc.length===1?"":"s"}</span></div>
+    <ol class="stand">${r.map(x=>`<li><div class="bar"><i style="width:${Math.max(8,100*x.s/max)}%"></i><span>${esc(C[x.id].name)}</span></div><span class="wl">${x.w}–${x.l}</span></li>`).join("")}</ol>
+  </section>`;
+}
+
+function render(){
+  const app=$("#app");
+  const head=`<header><div class="mark">Cuisine Court<small>ALL RISE · ORDER IN</small></div>
+    ${S.screen!=="setup"?`<button class="ghost" data-a="reset">New case</button>`:""}</header>`;
+
+  if(S.screen==="setup"){
+    const n=S.sel.length,total=n*(n-1)/2;
+    app.innerHTML=head+`
+    <section class="hero"><h1>Settle dinner <em>once and for all.</em></h1>
+      <p>Pick between two cuisines at a time. The court builds a ranking from your rulings and objects the moment your taste contradicts itself.</p></section>
+    <ul class="rules">
+      <li><b>01</b><span>Two cuisines appear. Tap the one you'd rather eat.</span></li>
+      <li><b>02</b><span>Cross-examination rounds test whether your earlier picks hold up.</span></li>
+      <li><b>03</b><span>Rule A over B, B over C, then C over A? Objection. Stand by it or overrule yourself.</span></li>
+    </ul>
+    <section style="display:grid;gap:12px">
+      <div class="row"><span class="label">On the docket</span><span class="hint">${n} cuisines · ${total} matchups</span></div>
+      <div class="chips">${CUISINES.map(c=>`<label class="chip"><input type="checkbox" id="c-${c.id}" data-c="${c.id}" ${S.sel.includes(c.id)?"checked":""}><span>${esc(c.name)}</span></label>`).join("")}</div>
+    </section>
+    <section style="display:grid;gap:10px"><span class="label">How to play</span>
+      <div class="modes" role="radiogroup" aria-label="Game mode">
+        <button class="mode" role="radio" aria-checked="${!S.debate}" data-a="mode-gut"><b>Gut feeling</b><small>Both are on the table. Which do you grab? Arguing is allowed.</small></button>
+        <button class="mode" role="radio" aria-checked="${!!S.debate}" data-a="mode-debate"><b>Debate mode</b><small>Adds a scenario prompt and a 30-second timer to every matchup.</small></button>
+      </div></section>
+    <div class="row"><span class="hint">${n<4?"Pick at least 4 to start.":"You can call the verdict early at any point."}</span>
+      <button class="cta" data-a="start" ${n<4?"disabled":""}>Call the first case</button></div>`;
+    app.querySelectorAll("[data-c]").forEach(el=>el.onchange=()=>{
+      const id=el.dataset.c;S.sel=el.checked?CUISINES.map(c=>c.id).filter(x=>x===id||S.sel.includes(x)):S.sel.filter(x=>x!==id);save();render();
+      const f=document.getElementById("c-"+id);f&&f.focus();
+    });
+  }
+
+  else if(S.screen==="play"&&S.cur){
+    const[a,b]=S.cur,r=record(),n=S.sel.length,total=n*(n-1)/2,done=S.order.length;
+    const[pq,ps]=PROMPTS[S.prompt];
+    const tk=id=>`<button class="ticket" data-v="${id}" aria-label="${esc(C[id].name)} wins">
+      <span class="rec">${r[id].w}–${r[id].l}</span><span class="nm">${esc(C[id].name)}</span><span class="ds">${esc(C[id].dishes)}</span></button>`;
+    app.innerHTML=head+`
+    <div style="display:grid;gap:8px">
+      <div class="docket"><span class="label">Case ${done+1} of ${total}</span>${S.trap?`<span class="xexam">Cross-examination</span>`:""}</div>
+      <div class="progress"><i style="width:${100*done/total}%"></i></div>
+    </div>
+    ${S.toast?`<div class="toast ${S.toast.ok?"ok":"bad"}" role="status"><b>${esc(S.toast.tag)}</b><span>${esc(S.toast.msg)}</span></div>`:""}
+    <div><p class="prompt">${S.debate?esc(pq):"Which would you rather?"}</p><div class="prompt-sub">${S.trap?"Your earlier rulings already point one way here. Stay consistent.":S.debate?esc(ps):"Both are on the table. Go with your gut, then defend it."}</div></div>
+    <div class="bout">${tk(a)}<div class="vs" aria-hidden="true">VS</div>${tk(b)}</div>
+    <div class="tools">
+      ${S.debate?`<button class="ghost timer" id="timer" data-a="timer"><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="9" fill="none" stroke="var(--line)" stroke-width="3"/><circle class="arc" cx="11" cy="11" r="9" fill="none" stroke="var(--brass)" stroke-width="3" stroke-dasharray="56.5" stroke-dashoffset="0"/></svg><span class="t-txt">30s</span> debate</button>`:""}
+      <button class="ghost" data-a="skip">Recuse (skip)</button>
+      <button class="ghost" data-a="toggle-debate">${S.debate?"Gut mode":"Debate mode"}</button>
+      ${done?`<button class="ghost" data-a="undo">Undo</button>`:""}
+      ${done>=n?`<button class="ghost" data-a="verdict">Verdict now</button>`:""}
+    </div>
+    ${done?standingsHTML():""}`;
+    app.querySelectorAll("[data-v]").forEach(el=>el.onclick=()=>vote(el.dataset.v));
+  }
+
+  else{ // verdict
+    S.screen="verdict";
+    const r=ranking(),t=triads(),[tt,ts]=title(t.cred),top=r[0];
+    const inLoops={};t.cyc.forEach(c=>c.forEach(id=>inLoops[id]=(inLoops[id]||0)+1));
+    const hot=Object.entries(inLoops).sort((a,b)=>b[1]-a[1])[0];
+    const dash=t.cred===null?0:2*Math.PI*40*(t.cred/100);
+    app.innerHTML=head+`
+    <section class="verdict" style="display:grid;gap:6px"><span class="label">${S.order.length} rulings entered</span><h2>The verdict</h2></section>
+    <div class="champ"><span class="label" style="color:#7A5A48">Undisputed favourite</span><span class="nm">${esc(C[top.id].name)}</span><span class="ds">${top.w}–${top.l} · ${esc(C[top.id].dishes)}</span></div>
+    <section class="score">
+      <svg class="dial" viewBox="0 0 100 100" role="img" aria-label="Credibility ${t.cred??0} percent">
+        <circle cx="50" cy="50" r="40" fill="none" stroke="var(--line)" stroke-width="10"/>
+        <circle cx="50" cy="50" r="40" fill="none" stroke="${t.cred!==null&&t.cred<75?"var(--chili)":"var(--brass)"}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${dash} 999" transform="rotate(-90 50 50)"/>
+        <text x="50" y="58" text-anchor="middle">${t.cred===null?"—":t.cred}</text></svg>
+      <div style="display:grid;gap:4px;min-width:0"><span class="label">Credibility</span><span class="title">${tt}</span><span class="hint">${ts}</span></div>
+    </section>
+    ${standingsHTML()}
+    <ul class="facts">
+      <li><span class="label">Loops on record</span><span>${t.cyc.length?`${t.cyc.length} of ${t.decided} complete trios went in circles.`:t.decided?`None across ${t.decided} complete trios.`:"Not enough rulings to check any trios."}</span>
+        ${t.cyc.length?`<div class="loops">${t.cyc.slice(0,5).map(c=>`<div class="loop">${[...c,c[0]].map(id=>`<span>${esc(C[id].name)}</span>`).join("<i>›</i>")}</div>`).join("")}</div>`:""}</li>
+      ${hot?`<li><span class="label">Most controversial</span><span>${esc(C[hot[0]].name)}, caught in ${hot[1]} loop${hot[1]>1?"s":""}.</span></li>`:""}
+      <li><span class="label">Objections</span><span>Stood firm ${S.stood}× · Overruled yourself ${S.overruled}×</span></li>
+    </ul>
+    <div class="row">
+      <button class="cta" data-a="copy">Copy for the group chat</button>
+      <span class="copied" id="copied" role="status"></span>
+    </div>
+    <div class="tools">${S.cur||nextPair()?`<button class="ghost" data-a="resume">Keep ruling</button>`:""}<button class="ghost" data-a="again">Rematch, same docket</button></div>`;
+    save();
+  }
+  renderLayer();tickUI();
+}
+
+function renderLayer(){
+  const L=$("#layer");const p=S.pending;
+  if(!p||S.screen!=="play"){L.innerHTML="";return}
+  const loop=[...p.chain,p.l];
+  L.innerHTML=`<div class="scrim" role="dialog" aria-modal="true" aria-labelledby="obj"><div class="objection">
+    <div class="stamp" id="obj">Objection!</div>
+    <div style="display:grid;gap:8px"><span class="label">You've ruled, in a circle</span>
+      <div class="loop">${loop.map(id=>`<span>${esc(C[id].name)}</span>`).join("<i>›</i>")}</div></div>
+    <p class="roast">You just picked ${esc(C[p.w].name)} over ${esc(C[p.l].name)}, but your earlier rulings rank ${esc(C[p.l].name)} higher. ${esc(p.roast)}</p>
+    <div class="choices">
+      <button data-a="stand">Stand by my ruling<small>${esc(C[p.w].name)} wins. The loop goes on the record.</small></button>
+      <button data-a="overrule">Overrule myself<small>${esc(C[p.l].name)} wins. Consistency restored.</small></button>
+    </div></div></div>`;
+  L.querySelector("[data-a=stand]").focus();
+}
+
+function copyText(){
+  const r=ranking(),t=triads(),[tt]=title(t.cred);
+  const lines=["Cuisine Court verdict",...r.map((x,i)=>`${i+1}. ${C[x.id].name} (${x.w}–${x.l})`),"",
+    `Credibility ${t.cred===null?"—":t.cred+"%"}: ${tt}`];
+  if(t.cyc.length)lines.push(`Loops: `+t.cyc.slice(0,3).map(c=>[...c,c[0]].map(id=>C[id].name).join(" > ")).join(" | "));
+  return lines.join("\n");
+}
+
+document.addEventListener("click",e=>{
+  const el=e.target.closest("[data-a]");if(!el)return;
+  const a=el.dataset.a;
+  if(a==="start"){S.res={};S.order=[];S.stood=0;S.overruled=0;S.toast=null;S.cur=null;S.screen="play";advance()}
+  else if(a==="reset"){stopTimer();S=fresh(S.sel,S.debate);save();render()}
+  else if(a==="again"){S=fresh(S.sel,S.debate);S.screen="play";advance()}
+  else if(a==="timer"){T.id?stopTimer():startTimer();tickUI()}
+  else if(a==="mode-gut"||a==="mode-debate"){S.debate=a==="mode-debate";save();render()}
+  else if(a==="toggle-debate"){S.debate=!S.debate;stopTimer();save();render()}
+  else if(a==="skip"){S.toast={ok:true,tag:"Recused",msg:"Case set aside. It may come back later."};advance()}
+  else if(a==="undo")undo();
+  else if(a==="verdict"){stopTimer();S.screen="verdict";render()}
+  else if(a==="resume"){S.screen="play";S.toast=null;if(!S.cur)advance();else{save();render()}}
+  else if(a==="stand")stand();
+  else if(a==="overrule")overrule();
+  else if(a==="copy"){
+    const txt=copyText(),out=$("#copied");
+    const fallback=()=>{out.textContent="";const pre=document.createElement("pre");pre.textContent=txt;pre.style.cssText="white-space:pre-wrap;font-family:var(--f-mono);font-size:12px;background:var(--bench);padding:12px;border-radius:10px;width:100%";el.parentElement.after(pre);const rg=document.createRange();rg.selectNodeContents(pre);const s=getSelection();s.removeAllRanges();s.addRange(rg)};
+    try{navigator.clipboard.writeText(txt).then(()=>out.textContent="Copied.",fallback)}catch(err){fallback()}
+  }
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"&&S.pending){S.pending=null;save();render()}
+  if(S.screen==="play"&&S.cur&&!S.pending&&!e.target.closest("input")){
+    if(e.key==="ArrowUp"||e.key==="1")vote(S.cur[0]);
+    if(e.key==="ArrowDown"||e.key==="2")vote(S.cur[1]);
+  }
+});
+
+if(S.screen==="play"&&!S.cur)advance();else render();
+</script>
+
+</body></html>
