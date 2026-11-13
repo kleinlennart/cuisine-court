@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-GB">
   <head>
     <meta charset="utf-8" />
     <meta
@@ -736,7 +736,7 @@
         ["Only one for the next 7 days.", "No swaps, no snacks on the side."],
         [
           "It's 2am. Make your case.",
-          "Whoever argues worse buys the delivery fee.",
+          "Whoever argues worse pays the delivery charge.",
         ],
         [
           "Someone else is paying.",
@@ -750,9 +750,9 @@
           "Leftovers, next day, straight from the fridge.",
           "Which one holds up?",
         ],
-        ["Rainy Sunday on the couch.", "Thirty seconds each. Go."],
-        ["Feeding a picky eight-year-old.", "Diplomacy counts."],
-        ["Best $20 order in the city.", "Name the actual dish."],
+        ["Rainy Sunday on the sofa.", "Thirty seconds each. Go."],
+        ["Feeding a fussy eight-year-old.", "Diplomacy counts."],
+        ["Best 20€ order in town.", "Name the actual dish."],
         ["Hungover. Explain yourself.", "The court has seen things."],
         ["Last meal on Earth.", "Dramatic answers encouraged."],
         ["Which one do you crave more often?", "Honesty is admissible."],
@@ -769,7 +769,7 @@
       const ROASTS = [
         "That's not a ranking. That's a roundabout.",
         "Rock, paper, dumplings.",
-        "Somewhere an economist just fainted.",
+        "Somewhere an economist has just fainted.",
         "Your taste buds have filed a complaint against each other.",
         "The spreadsheet is crying.",
         "Pick a lane. Any lane.",
@@ -1088,7 +1088,7 @@
         if (c >= 90)
           return [
             "Respected judge",
-            "A wobble or two, nothing the appeals court can't live with.",
+            "A wobble or two, nothing the Court of Appeal can't live with.",
           ];
         if (c >= 75)
           return [
@@ -1183,7 +1183,7 @@
       <li><b>03</b><span>Rule A over B, B over C, then C over A? Objection. Stand by it or overrule yourself.</span></li>
     </ul>
     <section style="display:grid;gap:12px">
-      <div class="row"><span class="label">On the docket</span><span class="hint">${n} cuisines · ${total} matchups</span></div>
+      <div class="row"><span class="label">Before the court</span><span class="hint">${n} cuisines · ${total} matchups</span></div>
       <div class="chips">${CUISINES.map((c) => `<label class="chip"><input type="checkbox" id="c-${c.id}" data-c="${c.id}" ${S.sel.includes(c.id) ? "checked" : ""}><span>${esc(c.name)}</span></label>`).join("")}</div>
     </section>
     <section style="display:grid;gap:10px"><span class="label">How to play</span>
@@ -1286,7 +1286,7 @@
       <button class="cta" data-a="copy">Copy for the group chat</button>
       <span class="copied" id="copied" role="status"></span>
     </div>
-    <div class="tools">${S.cur || nextPair() ? `<button class="ghost" data-a="resume">Keep ruling</button>` : ""}<button class="ghost" data-a="again">Rematch, same docket</button></div>`;
+    <div class="tools">${S.cur || nextPair() ? `<button class="ghost" data-a="resume">Keep ruling</button>` : ""}<button class="ghost" data-a="again">Rematch, same line-up</button></div>`;
           save();
         }
         renderLayer();
@@ -1305,7 +1305,7 @@
     <div class="stamp" id="obj">Objection!</div>
     <div style="display:grid;gap:8px"><span class="label">You've ruled, in a circle</span>
       <div class="loop">${loop.map((id) => `<span>${esc(C[id].name)}</span>`).join("<i>›</i>")}</div></div>
-    <p class="roast">You just picked ${esc(C[p.w].name)} over ${esc(C[p.l].name)}, but your earlier rulings rank ${esc(C[p.l].name)} higher. ${esc(p.roast)}</p>
+    <p class="roast">You've just picked ${esc(C[p.w].name)} over ${esc(C[p.l].name)}, but your earlier rulings rank ${esc(C[p.l].name)} higher. ${esc(p.roast)}</p>
     <div class="choices">
       <button data-a="stand">Stand by my ruling<small>${esc(C[p.w].name)} wins. The loop goes on the record.</small></button>
       <button data-a="overrule">Overrule myself<small>${esc(C[p.l].name)} wins. Consistency restored.</small></button>
