@@ -1288,6 +1288,12 @@
         if (S.screen === "setup") {
           const n = S.sel.length,
             total = (n * (n - 1)) / 2;
+          // selected first, then the rest; each group A–Z
+          const chips = [...CUISINES].sort(
+            (x, y) =>
+              S.sel.includes(y.id) - S.sel.includes(x.id) ||
+              x.name.localeCompare(y.name, "en-GB"),
+          );
           app.innerHTML =
             head +
             installHTML() +
@@ -1301,7 +1307,7 @@
     </ul>
     <section style="display:grid;gap:12px">
       <div class="row"><span class="label">Before the court</span><span class="hint">${n} cuisines · ${total} matchups</span></div>
-      <div class="chips">${CUISINES.map((c) => `<label class="chip"><input type="checkbox" id="c-${c.id}" data-c="${c.id}" ${S.sel.includes(c.id) ? "checked" : ""}><span>${esc(c.name)}</span></label>`).join("")}</div>
+      <div class="chips">${chips.map((c) => `<label class="chip"><input type="checkbox" id="c-${c.id}" data-c="${c.id}" ${S.sel.includes(c.id) ? "checked" : ""}><span>${esc(c.name)}</span></label>`).join("")}</div>
     </section>
     <section style="display:grid;gap:10px"><span class="label">How to play</span>
       <div class="modes" role="radiogroup" aria-label="Game mode">
