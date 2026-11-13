@@ -34,6 +34,21 @@
       }
     </style>
     <title>Cuisine Court</title>
+    <meta
+      name="description"
+      content="Settle dinner once and for all: rank cuisines head to head and get called out when your taste goes in circles."
+    />
+    <meta name="theme-color" content="#2A1613" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" type="image/png" href="icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Cuisine Court" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       rel="stylesheet"
@@ -138,6 +153,52 @@
       .ghost:hover {
         border-color: var(--brass);
         color: var(--paper);
+      }
+
+      /* install hint: quiet inline card, phones only, dismissible for good */
+      .install {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border: 1px dashed var(--line);
+        border-radius: 14px;
+        padding: 10px 10px 10px 12px;
+        font-size: 13px;
+        line-height: 1.35;
+        color: var(--muted);
+      }
+      .install img {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        flex: none;
+      }
+      .install span {
+        flex: 1;
+        min-width: 0;
+      }
+      .install b {
+        color: var(--paper);
+        font-weight: 600;
+      }
+      .install .go {
+        background: var(--brass);
+        color: var(--ink);
+        border: 0;
+        border-radius: 999px;
+        padding: 7px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        flex: none;
+      }
+      .install .x {
+        background: none;
+        border: 0;
+        color: var(--muted);
+        font-size: 18px;
+        line-height: 1;
+        padding: 6px;
+        flex: none;
       }
 
       /* setup */
@@ -1153,6 +1214,55 @@
         store.set(S);
       }
 
+      /* ---------- install hint ---------- */
+      const INSTALL_KEY = "cc-install-hint";
+      const ua = navigator.userAgent;
+      const isIOS =
+        /iPhone|iPad|iPod/.test(ua) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      const isAndroid = /Android/.test(ua);
+      const installed = () =>
+        matchMedia("(display-mode: standalone)").matches ||
+        navigator.standalone === true;
+      let installPrompt = null;
+      let installHidden = (() => {
+        try {
+          return localStorage.getItem(INSTALL_KEY) === "hidden";
+        } catch {
+          return false;
+        }
+      })();
+      function hideInstall() {
+        installHidden = true;
+        try {
+          localStorage.setItem(INSTALL_KEY, "hidden");
+        } catch {
+          // storage unavailable; hint stays hidden for this visit only
+        }
+      }
+      function installHTML() {
+        if (installHidden || installed() || !(isIOS || isAndroid)) return "";
+        const how = installPrompt
+          ? "Play offline, full screen, one tap from your home screen."
+          : isIOS
+            ? "Tap <b>Share</b>, then <b>Add to Home Screen</b> to play offline, full screen."
+            : "Open the browser menu, then <b>Install app</b> to play offline, full screen.";
+        return `<div class="install" role="note"><img src="icons/icon-192.png" alt="">
+      <span><b>Keep it as an app.</b> ${how}</span>
+      ${installPrompt ? `<button class="go" data-a="install">Install</button>` : ""}
+      <button class="x" data-a="install-hide" aria-label="Hide this tip">×</button></div>`;
+      }
+      addEventListener("beforeinstallprompt", (e) => {
+        e.preventDefault();
+        installPrompt = e;
+        if (S.screen !== "play") render();
+      });
+      addEventListener("appinstalled", () => {
+        installPrompt = null;
+        hideInstall();
+        render();
+      });
+
       function standingsHTML() {
         const r = ranking(),
           t = triads(),
@@ -1192,7 +1302,8 @@
         <button class="mode" role="radio" aria-checked="${!!S.debate}" data-a="mode-debate"><b>Debate mode</b><small>Adds a scenario prompt and a 30-second timer to every matchup.</small></button>
       </div></section>
     <div class="row"><span class="hint">${n < 4 ? "Pick at least 4 to start." : "You can call the verdict early at any point."}</span>
-      <button class="cta" data-a="start" ${n < 4 ? "disabled" : ""}>Call the first case</button></div>`;
+      <button class="cta" data-a="start" ${n < 4 ? "disabled" : ""}>Call the first case</button></div>
+    ${installHTML()}`;
           app.querySelectorAll("[data-c]").forEach(
             (el) =>
               (el.onchange = () => {
@@ -1286,7 +1397,8 @@
       <button class="cta" data-a="copy">Copy for the group chat</button>
       <span class="copied" id="copied" role="status"></span>
     </div>
-    <div class="tools">${S.cur || nextPair() ? `<button class="ghost" data-a="resume">Keep ruling</button>` : ""}<button class="ghost" data-a="again">Rematch, same line-up</button></div>`;
+    <div class="tools">${S.cur || nextPair() ? `<button class="ghost" data-a="resume">Keep ruling</button>` : ""}<button class="ghost" data-a="again">Rematch, same line-up</button></div>
+    ${installHTML()}`;
           save();
         }
         renderLayer();
@@ -1391,7 +1503,18 @@
           }
         } else if (a === "stand") stand();
         else if (a === "overrule") overrule();
-        else if (a === "copy") {
+        else if (a === "install-hide") {
+          hideInstall();
+          render();
+        } else if (a === "install" && installPrompt) {
+          const p = installPrompt;
+          installPrompt = null;
+          p.prompt();
+          p.userChoice.then((c) => {
+            if (c.outcome === "accepted") hideInstall();
+            render();
+          });
+        } else if (a === "copy") {
           const txt = copyText(),
             out = $("#copied");
           const fallback = () => {
@@ -1439,6 +1562,9 @@
 
       if (S.screen === "play" && !S.cur) advance();
       else render();
+
+      if ("serviceWorker" in navigator && location.protocol.startsWith("http"))
+        navigator.serviceWorker.register("sw.js").catch(() => {});
     </script>
   </body>
 </html>

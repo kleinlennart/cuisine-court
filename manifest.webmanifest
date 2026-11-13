@@ -1,0 +1,33 @@
+{
+  "name": "Cuisine Court",
+  "short_name": "Cuisine Court",
+  "description": "Settle dinner once and for all: rank cuisines head to head and get called out when your taste goes in circles.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2A1613",
+  "theme_color": "#2A1613",
+  "lang": "en-GB",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

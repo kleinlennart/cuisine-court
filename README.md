@@ -13,6 +13,13 @@ Settle dinner once and for all. Choose between two cuisines at a time; the court
 
 Pick **Gut feeling** for quick play, or **Debate mode** for a scenario prompt and a 30-second timer on every matchup.
 
+## Install as an app
+
+It works offline and opens full-screen once installed.
+
+- **iPhone (Safari):** open the link, tap Share, then **Add to Home Screen**.
+- **Android (Chrome):** open the link, tap the ⋮ menu, then **Install app** (or **Add to Home screen**).
+
 ## Running locally
 
 It's a single self-contained page. Progress is saved in your browser's local storage.
